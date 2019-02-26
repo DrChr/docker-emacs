@@ -1,0 +1,60 @@
+From 912314214b404c3131a1ecebc2756f0e54a79a44 Mon Sep 17 00:00:00 2001
+From: Chong Yidong <cyd@stupidchicken.com>
+Date: Fri, 23 Oct 2009 16:19:37 +0000
+Subject: [PATCH] * configure.in: Invoke $CPP with -P when creating Makefile
+ and src/Makefile.  Without this, gcc 4.4.2 converts each backslash-newline
+ pair in the input to a bare newline, yielding invalid Makefiles.
+
+* configure: Regenerate.
+---
+ configure    | 6 ++++--
+ configure.in | 4 ++--
+ 3 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/configure b/configure
+index ee6871bf1a..d2cdc49365 100755
+--- a/configure
++++ b/configure
+@@ -26762,7 +26764,7 @@ echo creating lib-src/Makefile
+   sed -e '1,/start of cpp stuff/d'\
+       -e 's,/\*\*/#\(.*\)$,/* \1 */,' \
+       < Makefile.c > junk.c
+-  $CPP $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
++  $CPP -P $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
+       sed -e 's/^ /	/' -e '/^#/d' -e '/^[ 	]*$/d' > junk2.c
+   cat junk1.c junk2.c > Makefile.new
+   rm -f junk.c junk1.c junk2.c
+@@ -26778,7 +26780,7 @@ echo creating src/Makefile
+   sed -e '1,/start of cpp stuff/d'\
+       -e 's,/\*\*/#\(.*\)$,/* \1 */,' \
+       < Makefile.c > junk.c
+-  $CPP $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
++  $CPP -P $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
+       sed -e 's/^ /	/' -e '/^#/d' -e '/^[ 	]*$/d' > junk2.c
+   cat junk1.c junk2.c > Makefile.new
+   rm -f junk.c junk1.c junk2.c
+diff --git a/configure.in b/configure.in
+index 87c820ff81..a110407808 100644
+--- a/configure.in
++++ b/configure.in
+@@ -3057,7 +3057,7 @@ echo creating lib-src/Makefile
+   sed -e '1,/start of cpp stuff/d'\
+       -e 's,/\*\*/#\(.*\)$,/* \1 */,' \
+       < Makefile.c > junk.c
+-  $CPP $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
++  $CPP -P $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
+       sed -e 's/^ /	/' -e '/^#/d' -e '/^[ 	]*$/d' > junk2.c
+   cat junk1.c junk2.c > Makefile.new
+   rm -f junk.c junk1.c junk2.c
+@@ -3073,7 +3073,7 @@ echo creating src/Makefile
+   sed -e '1,/start of cpp stuff/d'\
+       -e 's,/\*\*/#\(.*\)$,/* \1 */,' \
+       < Makefile.c > junk.c
+-  $CPP $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
++  $CPP -P $cpp_undefs -I. -I$srcdir/src $CPPFLAGS junk.c | \
+       sed -e 's/^ /	/' -e '/^#/d' -e '/^[ 	]*$/d' > junk2.c
+   cat junk1.c junk2.c > Makefile.new
+   rm -f junk.c junk1.c junk2.c
+-- 
+2.17.1
+
