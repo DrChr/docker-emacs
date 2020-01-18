@@ -1,7 +1,5 @@
 dist: bionic
 language: bash
-sudo: required
-services: docker
 
 cache:
   timeout: 900

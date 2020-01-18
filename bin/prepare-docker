@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
+# Install latest docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+apt-get update
+apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+docker version
+
 sysctl kernel.randomize_va_space=0
+cat /proc/sys/kernel/randomize_va_space
 echo '{"experimental":true}' | tee /etc/docker/daemon.json
 sed -i 's#ExecStart=#ExecStart=/usr/bin/setarch aarch64 -R #' /lib/systemd/system/docker.service
 systemctl daemon-reload
