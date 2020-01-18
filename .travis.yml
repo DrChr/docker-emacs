@@ -11,18 +11,23 @@ branches:
   only:
     - master
 
-arch:
-  - arm64
-
 env:
-  - DOCKER_IMAGES="26.3-dev 26.3" DOCKER_EXPERIMENTAL=enabled
+  - DOCKER_IMAGES="26.3-dev 26.3" DOCKER_CLI_EXPERIMENTAL=enabled
 
 install:
-  - sudo bin/prepare-docker
-  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || echo 'ARMNONEED'
+  - docker version
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - echo '{"experimental":true}' | sudo tee /etc/docker/daemon.json
+  - sudo systemctl restart docker
+  - docker version
+  - sudo sysctl kernel.randomize_va_space=0
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   - cd 26.3/dev
-  - setarch $(uname -m) -R docker build --pull --platform arm64 -t "silex/emacs:26.3-test-arm64" .
-  - setarch $(uname -m) -R docker build --pull --platform arm -t "silex/emacs:26.3-test-arm32" .
+  - docker build --pull --platform arm64 -t "silex/emacs:26.3-test-arm64" .
+  #- docker build --pull --platform arm -t "silex/emacs:26.3-test-arm32" .
 
 notifications:
   email:
