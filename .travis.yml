@@ -1,6 +1,7 @@
+dist: bionic
+language: bash
 sudo: required
 services: docker
-language: generic
 
 cache:
   timeout: 900
@@ -11,47 +12,18 @@ branches:
   only:
     - master
 
+arch:
+  - arm64
+
 env:
-  - DOCKER_IMAGES="master-dev master"
-  - DOCKER_IMAGES="master-alpine-dev master-alpine"
-  - DOCKER_IMAGES="27.0-dev 27.0"
-  - DOCKER_IMAGES="27.0-alpine-dev 27.0-alpine"
-  - DOCKER_IMAGES="26.3-dev 26.3"
-  - DOCKER_IMAGES="26.3-alpine-dev 26.3-alpine"
-  - DOCKER_IMAGES="26.2-dev 26.2"
-  - DOCKER_IMAGES="26.2-alpine-dev 26.2-alpine"
-  - DOCKER_IMAGES="26.1-dev 26.1"
-  - DOCKER_IMAGES="26.1-alpine-dev 26.1-alpine"
-  - DOCKER_IMAGES="25.3-dev 25.3"
-  - DOCKER_IMAGES="25.3-alpine-dev 25.3-alpine"
-  - DOCKER_IMAGES="25.2-dev 25.2"
-  - DOCKER_IMAGES="25.2-alpine-dev 25.2-alpine"
-  - DOCKER_IMAGES="25.1-dev 25.1"
-  - DOCKER_IMAGES="24.5-dev 24.5"
-  - DOCKER_IMAGES="24.4-dev 24.4"
-  - DOCKER_IMAGES="24.3-dev 24.3"
-  - DOCKER_IMAGES="24.2-dev 24.2"
-  - DOCKER_IMAGES="24.1-dev 24.1"
-  - DOCKER_IMAGES="23.4-dev 23.4"
+  - DOCKER_IMAGES="26.3-dev 26.3" DOCKER_EXPERIMENTAL=enabled
 
 install:
-  - sudo sysctl kernel.randomize_va_space=0
-  - source bin/setup-env
-  - travis_retry images prepare $DOCKER_IMAGES
-  - travis_retry images build $DOCKER_IMAGES
-  - images test $DOCKER_IMAGES
-  - |
-    # DOCKER_USERNAME is empty for forked repositories
-    # TRAVIS_PULL_REQUEST is "true" for pull requests
-    # TRAVIS_BRANCH is the current branch or the PR target branch
-    # TRAVIS_PULL_REQUEST_BRANCH is the PR source branch
-    github_branch="${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
-    if [[ ! -z "$DOCKER_USERNAME" ]] && [[ "$TRAVIS_PULL_REQUEST" != "true" ]] && \
-       [[ "$github_branch" == "master" ]] || [[ "$github_branch" == "staging-"* ]]; then
-      images push $DOCKER_IMAGES
-    else
-      echo ">>> not pushing"
-    fi
+  - sudo bin/prepare-docker
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || echo 'ARMNONEED'
+  - cd 26.3/dev
+  - setarch $(uname -m) -R docker build --pull --platform arm64 -t "silex/emacs:26.3-test-arm64" .
+  - setarch $(uname -m) -R docker build --pull --platform arm -t "silex/emacs:26.3-test-arm32" .
 
 notifications:
   email:
