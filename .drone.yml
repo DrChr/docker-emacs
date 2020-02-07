@@ -1,5 +1,4 @@
 kind: pipeline
-type: docker
 name: emacs-26.3-amd64
 
 platform:
@@ -17,7 +16,6 @@ steps:
 ---
 
 kind: pipeline
-type: docker
 name: emacs-26.3-arm64
 
 platform:
@@ -35,7 +33,6 @@ steps:
 ---
 
 kind: pipeline
-type: docker
 name: emacs-26.3-arm
 
 platform:
