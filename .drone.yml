@@ -1,5 +1,42 @@
 kind: pipeline
-name: emacs
+type: docker
+name: emacs-26.3-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: 26.3-dev
+  image: alpine
+  commands:
+  - sysctl kernel.randomize_va_space=0
+  - cd 26.3/ubuntu/18.04/dev
+  - docker build -t test .
+
+---
+
+kind: pipeline
+type: docker
+name: emacs-26.3-arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: 26.3-dev
+  image: alpine
+  commands:
+  - sysctl kernel.randomize_va_space=0
+  - cd 26.3/ubuntu/18.04/dev
+  - docker build -t test .
+
+---
+
+kind: pipeline
+type: docker
+name: emacs-26.3-arm
 
 platform:
   os: linux
@@ -7,7 +44,8 @@ platform:
 
 steps:
 - name: 26.3-dev
-  image: plugins/docker
-  settings:
-    repo: silex/emacs
-    dockerfile: 26.3/ubuntu/18.04/dev/Dockerfile
+  image: alpine
+  commands:
+  - sysctl kernel.randomize_va_space=0
+  - cd 26.3/ubuntu/18.04/dev
+  - docker build -t test .
