@@ -1,7 +1,5 @@
 FROM ubuntu:18.04
 
-RUN uname -a
-
 RUN apt-get update && \
     apt-get install -y \
             autoconf \
@@ -44,18 +42,18 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 ENV EMACS_BRANCH="emacs-26.3"
-ENV EMACS_VERSION="26.3-test"
+ENV EMACS_VERSION="26.3"
+
 ENV EMACS_REPOSITORY="git://git.sv.gnu.org/emacs.git"
 
 RUN git clone --depth 1 --branch $EMACS_BRANCH $EMACS_REPOSITORY /opt/emacs && \
     cd /opt/emacs && \
     ./autogen.sh && \
     ./configure --with-modules && \
-    make -j 8 && \
     make install
 
-RUN curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
 ENV PATH="/root/.cask/bin:$PATH"
+RUN curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
 
 RUN mkdir -p /root/.emacs.d/elpa/gnupg && \
     chmod 700 /root/.emacs.d/elpa/gnupg && \

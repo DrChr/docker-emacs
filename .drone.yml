@@ -1,0 +1,13 @@
+kind: pipeline
+name: emacs
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+- name: 26.3-dev
+  image: plugins/docker
+  settings:
+    repo: silex/emacs
+    dockerfile: 26.3/ubuntu/18.04/dev/Dockerfile
